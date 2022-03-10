@@ -40,30 +40,6 @@ def inlinequery(update: Update, _) -> None:
     user = update.effective_user
 
     results: List = []
-    inline_help_dicts = [
-        {
-            "title": "SpamProtection INFO",
-            "description": "Look up a person on @Intellivoid SpamProtection API",
-            "message_text":"Click the button below to look up a person on @Intellivoid SpamProtection API using username or telegram id",
-            "thumb_urL": "https://telegra.ph/file/3ce9045b1c7faf7123c67.jpg",
-            "keyboard": ".spb ",
-        },
-        {
-            "title": "User info on Kigyo",
-            "description": "Look up a person in Kigyo database",
-            "message_text": "Click the button below to look up a person in Kigyo database using their Telegram ID",
-            "thumb_urL": "https://telegra.ph/file/c85e07b58f5b3158b529a.jpg",
-            "keyboard": ".info ",
-        },
-        {
-            "title": "About",
-            "description": "Know about Kigyo",
-            "message_text": "Click the button below to get to know about Kigyo.",
-            "thumb_urL": "https://telegra.ph/file/c85e07b58f5b3158b529a.jpg",
-            "keyboard": ".about ",
-        },
-    ]
-
     inline_funcs = {
         ".spb": spb,
         ".info": inlineinfo,
@@ -73,6 +49,30 @@ def inlinequery(update: Update, _) -> None:
     if (f := query.split(" ", 1)[0]) in inline_funcs:
         inline_funcs[f](remove_prefix(query, f).strip(), update, user)
     else:
+        inline_help_dicts = [
+            {
+                "title": "SpamProtection INFO",
+                "description": "Look up a person on @Intellivoid SpamProtection API",
+                "message_text":"Click the button below to look up a person on @Intellivoid SpamProtection API using username or telegram id",
+                "thumb_urL": "https://telegra.ph/file/3ce9045b1c7faf7123c67.jpg",
+                "keyboard": ".spb ",
+            },
+            {
+                "title": "User info on Kigyo",
+                "description": "Look up a person in Kigyo database",
+                "message_text": "Click the button below to look up a person in Kigyo database using their Telegram ID",
+                "thumb_urL": "https://telegra.ph/file/c85e07b58f5b3158b529a.jpg",
+                "keyboard": ".info ",
+            },
+            {
+                "title": "About",
+                "description": "Know about Kigyo",
+                "message_text": "Click the button below to get to know about Kigyo.",
+                "thumb_urL": "https://telegra.ph/file/c85e07b58f5b3158b529a.jpg",
+                "keyboard": ".about ",
+            },
+        ]
+
         for ihelp in inline_help_dicts:
             results.append(
                 article(
@@ -132,8 +132,7 @@ def inlineinfo(query: str, update: Update, context: CallbackContext) -> None:
     text += f"\nPermanent user link: {mention_html(user.id, 'link')}"
 
     try:
-        spamwtc = sw.get_ban(int(user.id))
-        if spamwtc:
+        if spamwtc := sw.get_ban(int(user.id)):
             text += "<b>\n\nSpamWatch:\n</b>"
             text += "<b>This person is banned in Spamwatch!</b>"
             text += f"\nReason: <pre>{spamwtc.reason}</pre>"
@@ -153,10 +152,7 @@ def inlineinfo(query: str, update: Update, context: CallbackContext) -> None:
         sp = status["results"]["spam_prediction"]["spam_prediction"]
         hamp = status["results"]["spam_prediction"]["ham_prediction"]
         blc = status["results"]["attributes"]["is_blacklisted"]
-        if blc:
-            blres = status["results"]["attributes"]["blacklist_reason"]
-        else:
-            blres = None
+        blres = status["results"]["attributes"]["blacklist_reason"] if blc else None
         text += "\n\n<b>SpamProtection:</b>"
         text += f"<b>\nPrivate Telegram ID:</b> <code>{ptid}</code>\n"
         text += f"<b>Operator:</b> <code>{op}</code>\n"
@@ -177,22 +173,22 @@ def inlineinfo(query: str, update: Update, context: CallbackContext) -> None:
     text += f"\nChat count: <code>{num_chats}</code>"
 
     if user.id == OWNER_ID:
-        text += f"\nThis person is my owner"
+        text += "\\nThis person is my owner"
         nation_level_present = True
     elif user.id in DEV_USERS:
-        text += f"\nThis Person is a part of Eagle Union"
+        text += "\\nThis Person is a part of Eagle Union"
         nation_level_present = True
     elif user.id in SUDO_USERS:
-        text += f"\nThe Nation level of this person is Royal"
+        text += "\\nThe Nation level of this person is Royal"
         nation_level_present = True
     elif user.id in SUPPORT_USERS:
-        text += f"\nThe Nation level of this person is Sakura"
+        text += "\\nThe Nation level of this person is Sakura"
         nation_level_present = True
     elif user.id in SARDEGNA_USERS:
-        text += f"\nThe Nation level of this person is Sardegna"
+        text += "\\nThe Nation level of this person is Sardegna"
         nation_level_present = True
     elif user.id in WHITELIST_USERS:
-        text += f"\nThe Nation level of this person is Neptunia"
+        text += "\\nThe Nation level of this person is Neptunia"
         nation_level_present = True
 
     if nation_level_present:
@@ -227,26 +223,25 @@ def about(query: str, update: Update, context: CallbackContext) -> None:
         [
             [
                 InlineKeyboardButton(
-                    text="Support",
-                    url=f"https://t.me/YorktownEagleUnion",
+                    text="Support", url="https://t.me/YorktownEagleUnion"
                 ),
                 InlineKeyboardButton(
-                    text="Channel",
-                    url=f"https://t.me/KigyoUpdates",
+                    text="Channel", url="https://t.me/KigyoUpdates"
                 ),
-
             ],
             [
                 InlineKeyboardButton(
                     text="GitLab",
-                    url=f"https://www.gitlab.com/Dank-del/EnterpriseALRobot",
+                    url="https://www.gitlab.com/Dank-del/EnterpriseALRobot",
                 ),
                 InlineKeyboardButton(
                     text="GitHub",
                     url="https://www.github.com/Dank-del/EnterpriseALRobot",
                 ),
             ],
-        ])
+        ]
+    )
+
 
     results.append(
 
@@ -270,35 +265,31 @@ def spb(query: str, update: Update, context: CallbackContext) -> None:
     except IndexError:
         search = user_id
 
-    if search:
-        srdata = search
-    else:
-        srdata = user_id
-
+    srdata = search or user_id
     url = f"https://api.intellivoid.net/spamprotection/v1/lookup?query={srdata}"
     r = requests.get(url)
     a = r.json()
     response = a["success"]
     if response is True:
         date = a["results"]["last_updated"]
-        stats = f"*◢ Intellivoid• SpamProtection Info*:\n"
+        stats = "*◢ Intellivoid• SpamProtection Info*:\\n"
         stats += f' • *Updated on*: `{datetime.fromtimestamp(date).strftime("%Y-%m-%d %I:%M:%S %p")}`\n'
 
         if a["results"]["attributes"]["is_potential_spammer"] is True:
-            stats += f" • *User*: `USERxSPAM`\n"
+            stats += " • *User*: `USERxSPAM`\\n"
         elif a["results"]["attributes"]["is_operator"] is True:
-            stats += f" • *User*: `USERxOPERATOR`\n"
+            stats += " • *User*: `USERxOPERATOR`\\n"
         elif a["results"]["attributes"]["is_agent"] is True:
-            stats += f" • *User*: `USERxAGENT`\n"
+            stats += " • *User*: `USERxAGENT`\\n"
         elif a["results"]["attributes"]["is_whitelisted"] is True:
-            stats += f" • *User*: `USERxWHITELISTED`\n"
+            stats += " • *User*: `USERxWHITELISTED`\\n"
 
         stats += f' • *Type*: `{a["results"]["entity_type"]}`\n'
         stats += (
             f' • *Language*: `{a["results"]["language_prediction"]["language"]}`\n'
         )
         stats += f' • *Language Probability*: `{a["results"]["language_prediction"]["probability"]}`\n'
-        stats += f"*Spam Prediction*:\n"
+        stats += "*Spam Prediction*:\\n"
         stats += f' • *Ham Prediction*: `{a["results"]["spam_prediction"]["ham_prediction"]}`\n'
         stats += f' • *Spam Prediction*: `{a["results"]["spam_prediction"]["spam_prediction"]}`\n'
         stats += f'*Blacklisted*: `{a["results"]["attributes"]["is_blacklisted"]}`\n'

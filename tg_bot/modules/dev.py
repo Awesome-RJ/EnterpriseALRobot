@@ -12,8 +12,7 @@ from telegram.ext import CallbackContext, CommandHandler
 @dev_plus
 def leave(update: Update, context: CallbackContext):
     bot = context.bot
-    args = context.args
-    if args:
+    if args := context.args:
         chat_id = str(args[0])
         try:
             bot.leave_chat(int(chat_id))

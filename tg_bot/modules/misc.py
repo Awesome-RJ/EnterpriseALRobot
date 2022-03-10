@@ -66,10 +66,7 @@ def get_id(update: Update, context: CallbackContext):
     message = update.effective_message
     chat = update.effective_chat
     msg = update.effective_message
-    user_id = extract_user(msg, args)
-
-    if user_id:
-
+    if user_id := extract_user(msg, args):
         if msg.reply_to_message and msg.reply_to_message.forward_from:
 
             user1 = message.reply_to_message.from_user
@@ -90,17 +87,15 @@ def get_id(update: Update, context: CallbackContext):
                 parse_mode=ParseMode.HTML,
             )
 
+    elif chat.type == "private":
+        msg.reply_text(
+            f"Your id is <code>{chat.id}</code>.", parse_mode=ParseMode.HTML
+        )
+
     else:
-
-        if chat.type == "private":
-            msg.reply_text(
-                f"Your id is <code>{chat.id}</code>.", parse_mode=ParseMode.HTML
-            )
-
-        else:
-            msg.reply_text(
-                f"This group's id is <code>{chat.id}</code>.", parse_mode=ParseMode.HTML
-            )
+        msg.reply_text(
+            f"This group's id is <code>{chat.id}</code>.", parse_mode=ParseMode.HTML
+        )
 
 
 def gifid(update: Update, _):
@@ -119,9 +114,7 @@ def info(update: Update, context: CallbackContext):
     args = context.args
     message = update.effective_message
     chat = update.effective_chat
-    user_id = extract_user(update.effective_message, args)
-
-    if user_id:
+    if user_id := extract_user(update.effective_message, args):
         user = bot.get_chat(user_id)
 
     elif not message.reply_to_message and not args:
@@ -157,8 +150,7 @@ def info(update: Update, context: CallbackContext):
     text += f"\nPermanent user link: {mention_html(user.id, 'link')}"
 
     try:
-        spamwtc = sw.get_ban(int(user.id))
-        if spamwtc:
+        if spamwtc := sw.get_ban(int(user.id)):
             text += "<b>\n\nSpamWatch:\n</b>"
             text += "<b>This person is banned in Spamwatch!</b>"
             text += f"\nReason: <pre>{spamwtc.reason}</pre>"
@@ -178,10 +170,7 @@ def info(update: Update, context: CallbackContext):
         sp = status["results"]["spam_prediction"]["spam_prediction"]
         hamp = status["results"]["spam_prediction"]["ham_prediction"]
         blc = status["results"]["attributes"]["is_blacklisted"]
-        if blc:
-            blres = status["results"]["attributes"]["blacklist_reason"]
-        else:
-            blres = None
+        blres = status["results"]["attributes"]["blacklist_reason"] if blc else None
         text += "\n\n<b>SpamProtection:</b>"
         text += f"<b>\nPrivate Telegram ID:</b> <code>{ptid}</code>\n"
         text += f"<b>Operator:</b> <code>{op}</code>\n"
@@ -216,22 +205,22 @@ def info(update: Update, context: CallbackContext):
 
 
     if user.id == OWNER_ID:
-        text += f"\nThis person is my owner"
+        text += "\\nThis person is my owner"
         Nation_level_present = True
     elif user.id in DEV_USERS:
-        text += f"\nThis Person is a part of Eagle Union"
+        text += "\\nThis Person is a part of Eagle Union"
         Nation_level_present = True
     elif user.id in SUDO_USERS:
-        text += f"\nThe Nation level of this person is Royal"
+        text += "\\nThe Nation level of this person is Royal"
         Nation_level_present = True
     elif user.id in SUPPORT_USERS:
-        text += f"\nThe Nation level of this person is Sakura"
+        text += "\\nThe Nation level of this person is Sakura"
         Nation_level_present = True
     elif user.id in SARDEGNA_USERS:
-        text += f"\nThe Nation level of this person is Sardegna"
+        text += "\\nThe Nation level of this person is Sardegna"
         Nation_level_present = True
     elif user.id in WHITELIST_USERS:
-        text += f"\nThe Nation level of this person is Neptunia"
+        text += "\\nThe Nation level of this person is Neptunia"
         Nation_level_present = True
 
     if Nation_level_present:
@@ -298,9 +287,7 @@ def ram(update: Update, _):
     cmd = "ps -o pid"
     output = shell(cmd)[0].decode()
     processes = output.splitlines()
-    mem = 0
-    for p in processes[1:]:
-        mem += int(
+    mem = sum(int(
             float(
                 shell(
                     "ps u -p {} | awk ".format(p)
@@ -310,7 +297,7 @@ def ram(update: Update, _):
                 .rstrip()
                 .replace("'", "")
             )
-        )
+        ) for p in processes[1:])
     update.message.reply_text(
         f"RAM usage = <code>{mem} MiB</code>", parse_mode=ParseMode.HTML
     )
@@ -333,22 +320,22 @@ def markdown_help(update: Update, _):
 def stats(update, context):
     uptime = datetime.datetime.fromtimestamp(boot_time()).strftime("%Y-%m-%d %H:%M:%S")
     status = "*>-------< System >-------<*\n"
-    status += "*System uptime:* " + str(uptime) + "\n"
+    status += f"*System uptime:* {str(uptime)}" + "\n"
 
     uname = platform.uname()
-    status += "*System:* " + str(uname.system) + "\n"
-    status += "*Node name:* " + str(uname.node) + "\n"
-    status += "*Release:* " + str(uname.release) + "\n"
-    status += "*Machine:* " + str(uname.machine) + "\n"
+    status += f"*System:* {str(uname.system)}" + "\n"
+    status += f"*Node name:* {str(uname.node)}" + "\n"
+    status += f"*Release:* {str(uname.release)}" + "\n"
+    status += f"*Machine:* {str(uname.machine)}" + "\n"
 
     mem = virtual_memory()
     cpu = cpu_percent()
     disk = disk_usage("/")
-    status += "*CPU usage:* " + str(cpu) + " %\n"
-    status += "*Ram usage:* " + str(mem[2]) + " %\n"
-    status += "*Storage used:* " + str(disk[3]) + " %\n\n"
-    status += "*Python version:* " + python_version() + "\n"
-    status += "*Library version:* " + str(__version__) + "\n"
+    status += f"*CPU usage:* {str(cpu)}" + " %\n"
+    status += f"*Ram usage:* {str(mem[2])}" + " %\n"
+    status += f"*Storage used:* {str(disk[3])}" + " %\n\n"
+    status += f"*Python version:* {python_version()}" + "\n"
+    status += f"*Library version:* {str(__version__)}" + "\n"
     try:
         update.effective_message.reply_text(
 

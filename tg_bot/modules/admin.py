@@ -328,7 +328,7 @@ def invite(update: Update, context: CallbackContext):
 
     if chat.username:
         update.effective_message.reply_text(f"https://t.me/{chat.username}")
-    elif chat.type == chat.SUPERGROUP or chat.type == chat.CHANNEL:
+    elif chat.type in [chat.SUPERGROUP, chat.CHANNEL]:
         bot_member = chat.get_member(bot.id)
         if bot_member.can_invite_users:
             invitelink = bot.exportChatInviteLink(chat.id)
@@ -360,7 +360,7 @@ def _generate_sexy(entity, ping):
             sexy_text = f'<a href="tg://user?id={entity.id}">{sexy_text}</a>'
         elif entity.username:
             sexy_text = f'<a href="https://t.me/{entity.username}">{sexy_text}</a>'
-        elif not ping:
+        else:
             sexy_text = sexy_text.replace("@", f"@{ZWS}")
     if entity.is_bot:
         sexy_text += " <code>[BOT]</code>"
@@ -390,7 +390,7 @@ async def admins(client, message):
         text_unping += f"\n[<code>{i.user.id}</code>] {_generate_sexy(i.user, False)}"
         text_ping += f"\n[<code>{i.user.id}</code>] {_generate_sexy(i.user, True)}"
         if i.title:
-            text_unping += f' // {html.escape(i.title.replace("@", "@" + ZWS))}'
+            text_unping += f" // {html.escape(i.title.replace('@', f'@{ZWS}'))}"
             text_ping += f" // {html.escape(i.title)}"
     reply = await message.reply_text(text_unping, disable_web_page_preview=True)
     await reply.edit_text(text_ping, disable_web_page_preview=True)

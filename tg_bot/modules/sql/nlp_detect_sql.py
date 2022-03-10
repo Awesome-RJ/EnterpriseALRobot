@@ -68,8 +68,7 @@ def __load_nlp_stat_list():
 
 def migrate_chat(old_chat_id, new_chat_id):
     with NLP_SETTING_LOCK:
-        chat = SESSION.query(NLPSettings).get(str(old_chat_id))
-        if chat:
+        if chat := SESSION.query(NLPSettings).get(str(old_chat_id)):
             chat.chat_id = new_chat_id
             SESSION.add(chat)
 

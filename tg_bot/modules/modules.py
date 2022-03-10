@@ -26,7 +26,7 @@ def load(update: Update, context: CallbackContext):
     )
 
     try:
-        imported_module = importlib.import_module("tg_bot.modules." + text)
+        imported_module = importlib.import_module(f"tg_bot.modules.{text}")
     except:
         load_messasge.edit_text("Does that module even exist?")
         return
@@ -34,7 +34,7 @@ def load(update: Update, context: CallbackContext):
     if not hasattr(imported_module, "__mod_name__"):
         imported_module.__mod_name__ = imported_module.__name__
 
-    if not imported_module.__mod_name__.lower() in IMPORTED:
+    if imported_module.__mod_name__.lower() not in IMPORTED:
         IMPORTED[imported_module.__mod_name__.lower()] = imported_module
     else:
         load_messasge.edit_text("Module already loaded.")
@@ -91,7 +91,7 @@ def unload(update: Update, context: CallbackContext):
     )
 
     try:
-        imported_module = importlib.import_module("tg_bot.modules." + text)
+        imported_module = importlib.import_module(f"tg_bot.modules.{text}")
     except:
         unload_messasge.edit_text("Does that module even exist?")
         return

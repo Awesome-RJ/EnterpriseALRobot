@@ -7,10 +7,12 @@ from telegram.ext import CallbackContext
 def shout(update: Update, context: CallbackContext):
     args = context.args
     text = " ".join(args)
-    result = []
-    result.append(" ".join(list(text)))
-    for pos, symbol in enumerate(text[1:]):
-        result.append(symbol + " " + "  " * pos + symbol)
+    result = [" ".join(list(text))]
+    result.extend(
+        f'{symbol} ' + "  " * pos + symbol
+        for pos, symbol in enumerate(text[1:])
+    )
+
     result = list("\n".join(result))
     result[0] = text[0]
     result = "".join(result)
