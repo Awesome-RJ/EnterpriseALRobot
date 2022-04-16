@@ -127,20 +127,12 @@ def warn(
         )
 
     else:
-        keyboard = InlineKeyboardMarkup(
-            [
-                [
-                    InlineKeyboardButton(
-                        "🔘 Remove warn", callback_data="rm_warn({})".format(user.id)
-                    )
-                ],
-                [
-                    InlineKeyboardButton(
-                        "📝 Read the rules", url="t.me/{}?start={}".format(dispatcher.bot.username, chat.id)
-                    )
-                ],
-            ]
-        )
+        keyboard = [[
+            InlineKeyboardButton("🔘 Remove warn", callback_data="rm_warn({})".format(user.id))
+            ]]
+        rules = rules_sql.get_rules(chat.id)
+        if rules: 
+            keyboard[0].append(InlineKeyboardButton("📝 Read the rules", url="t.me/{}?start={}".format(dispatcher.bot.username, chat.id)))
 
         reply = (
             f"<code>❕</code><b>Warn Event</b>\n"
@@ -161,12 +153,12 @@ def warn(
         )
 
     try:
-        message.reply_text(reply, reply_markup=keyboard, parse_mode=ParseMode.HTML)
+        message.reply_text(reply, reply_markup=InlineKeyboardMarkup(keyboard), parse_mode=ParseMode.HTML)
     except BadRequest as excp:
         if excp.message == "Reply message not found":
             # Do not reply
             message.reply_text(
-                reply, reply_markup=keyboard, parse_mode=ParseMode.HTML, quote=False
+                reply, reply_markup=InlineKeyboardMarkup(keyboard), parse_mode=ParseMode.HTML, quote=False
             )
         else:
             raise
@@ -221,20 +213,12 @@ def swarn(
         )
 
     else:
-        keyboard = InlineKeyboardMarkup(
-            [
-                [
-                    InlineKeyboardButton(
-                        "🔘 Remove warn", callback_data="rm_warn({})".format(user.id)
-                    )
-                ],
-                [
-                    InlineKeyboardButton(
-                        "📝 Read the rules", url="t.me/{}?start={}".format(dispatcher.bot.username, chat.id)
-                    )
-                ],
-            ]
-        )
+        keyboard = [[
+            InlineKeyboardButton("🔘 Remove warn", callback_data="rm_warn({})".format(user.id))
+            ]]
+        rules = rules_sql.get_rules(chat.id)
+        if rules: 
+            keyboard[0].append(InlineKeyboardButton("📝 Read the rules", url="t.me/{}?start={}".format(dispatcher.bot.username, chat.id)))
 
         reply = (
             f"<code>❕</code><b>Warn Event</b>\n"
@@ -261,7 +245,7 @@ def swarn(
         if dels:
             if message.reply_to_message:
                 message.reply_to_message.delete()
-        message.reply_text(reply, reply_markup=keyboard, parse_mode=ParseMode.HTML)
+        message.reply_text(reply, reply_markup=InlineKeyboardMarkup(keyboard), parse_mode=ParseMode.HTML)
         message.delete()
     except BadRequest as excp:
         if excp.message == "Reply message not found":
@@ -269,7 +253,7 @@ def swarn(
             if message.reply_to_message:
                 message.reply_to_message.delete()
             message.reply_text(
-                reply, reply_markup=keyboard, parse_mode=ParseMode.HTML, quote=False
+                reply, reply_markup=InlineKeyboardMarkup(keyboard), parse_mode=ParseMode.HTML, quote=False
             )
             message.delete()
         else:
@@ -323,20 +307,12 @@ def dwarn(
         )
 
     else:
-        keyboard = InlineKeyboardMarkup(
-            [
-                [
-                    InlineKeyboardButton(
-                        "🔘 Remove warn", callback_data="rm_warn({})".format(user.id)
-                    )
-                ],
-                [
-                    InlineKeyboardButton(
-                        "📝 Read the rules", url="t.me/{}?start={}".format(dispatcher.bot.username, chat.id)
-                    )
-                ],
-            ]
-        )
+        keyboard = [[
+            InlineKeyboardButton("🔘 Remove warn", callback_data="rm_warn({})".format(user.id))
+            ]]
+        rules = rules_sql.get_rules(chat.id)
+        if rules: 
+            keyboard[0].append(InlineKeyboardButton("📝 Read the rules", url="t.me/{}?start={}".format(dispatcher.bot.username, chat.id)))
 
         reply = (
             f"<code>❕</code><b>Warn Event</b>\n"
@@ -360,14 +336,14 @@ def dwarn(
     try:
         if message.reply_to_message:
             message.reply_to_message.delete()
-        message.reply_text(reply, reply_markup=keyboard, parse_mode=ParseMode.HTML)
+        message.reply_text(reply, reply_markup=InlineKeyboardMarkup(keyboard), parse_mode=ParseMode.HTML)
     except BadRequest as excp:
         if excp.message == "Reply message not found":
             # Do not reply
             if message.reply_to_message:
                 message.reply_to_message.delete()
             message.reply_text(
-                reply, reply_markup=keyboard, parse_mode=ParseMode.HTML, quote=False
+                reply, reply_markup=InlineKeyboardMarkup(keyboard), parse_mode=ParseMode.HTML, quote=False
             )
         else:
             raise
