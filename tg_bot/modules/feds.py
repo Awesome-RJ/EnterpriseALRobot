@@ -90,6 +90,29 @@ UNFBAN_ERRORS = {
     "Have no rights to send a message",
 }
 
+@typing_action
+@kigcmd(command='renamefed')
+@spamcheck
+def rename_fed(update: Update, context: CallbackContext):
+    user = update.effective_user
+    msg = update.effective_message
+    args = msg.text.split(None, 2)
+
+    if len(args) < 3:
+        return msg.reply_text("usage: /renamefed <fed_id> <newname>")
+
+    fed_id, newname = args[1], args[2]
+    verify_fed = sql.get_fed_info(fed_id)
+
+    if not verify_fed:
+        return msg.reply_text("This fed not exist in my database!")
+
+    if is_user_fed_owner(fed_id, user.id):
+        sql.rename_fed(fed_id, user.id, newname)
+        msg.reply_text(f"Successfully renamed your fed name to {newname}!")
+    else:
+        msg.reply_text("Only federation owner can do this!")
+
 
 @typing_action
 @kigcmd(command='newfed')
